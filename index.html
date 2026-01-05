@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>银发护卫</title>
+    <style>
+        /* ==================== APP GLOBAL STYLES (app.wxss) ==================== */
+        :root {
+            /* Colors */
+            --blue-50: #eff6ff;
+            --blue-100: #dbeafe;
+            --blue-200: #bfdbfe;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+
+            --red-50: #fef2f2;
+            --red-100: #fee2e2;
+            --red-500: #ef4444;
+            --red-600: #dc2626;
+
+            --green-50: #f0fdf4;
+            --green-100: #dcfce7;
+            --green-500: #22c55e;
+            --green-600: #16a34a;
+
+            --orange-50: #fff7ed;
+            --orange-100: #ffedd5;
+            --orange-500: #f97316;
+            --orange-600: #ea580c;
+
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-800: #1f2937;
+            
+            /* Add missing variables */
+            --elderly-primary: var(--orange-500);
+            --family-primary: var(--blue-500);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--gray-50);
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Utility Helpers */
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .text-center { text-align: center; }
+        .bold { font-weight: bold; }
+        .relative { position: relative; }
+        .absolute { position: absolute; }
+        .fixed { position: fixed; }
+        .hidden { display: none !important; }
+        
+        button {
+            border: none;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* ==================== LANDING PAGE STYLES (index.wxss) ==================== */
+        #screen-landing .container {
+            padding: 20px;
+            background-color: #f8f9fa;
+            height: 100vh;
+            display: block;
+        }
+
+        #screen-landing .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        #screen-landing .sub-title {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        #screen-landing .role-card {
+            width: 100%;
+            height: 150px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        #screen-landing .role-card:active {
+            transform: scale(0.98);
+        }
+
+        #screen-landing .elderly {
+            background: white;
+            border-left: 5px solid var(--elderly-primary);
+        }
+
+        #screen-landing .family {
+            background: white;
+            border-left: 5px solid var(--family-primary);
+        }
+
+        #screen-landing .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        #screen-landing .label {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        #screen-landing .desc {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* ==================== ELDERLY PAGE STYLES (pages/elderly/index.wxss) ==================== */
+        #screen-elderly {
+            padding-bottom: 80px; /* nav bar space */
+            min-height: 100vh;
+        }
+
+        #screen-elderly .sticky-top {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        #screen-elderly .header {
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        #screen-elderly .content-pad {
+            padding: 15px;
+        }
+        
+        /* Typography */
+        #screen-elderly .text-gray { color: var(--gray-400); }
+        #screen-elderly .text-blue { color: var(--blue-600); }
+        #screen-elderly .text-green { color: var(--green-600); }
+        #screen-elderly .text-white { color: #fff; }
+        #screen-elderly .text-sm { font-size: 12px; }
+        #screen-elderly .text-lg { font-size: 16px; }
+        #screen-elderly .text-xl { font-size: 18px; }
+        
+        #screen-elderly .greeting { font-size: 20px; font-weight: 800; color: var(--gray-800); }
+        #screen-elderly .location { font-size: 12px; color: var(--blue-600); margin-top: 5px; }
+
+        #screen-elderly .search-bar { 
+            margin-top: 10px; 
+            background: var(--gray-100); 
+            border-radius: 15px; 
+            padding: 10px; 
+            display: flex; align-items: center; 
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        #screen-elderly .search-bar input { 
+            flex: 1; margin-left: 10px; font-size: 16px; border: none; background: transparent; outline: none; 
+        }
+
+        /* SOS Banner */
+        #screen-elderly .sos-banner {
+            background: linear-gradient(135deg, var(--red-500), var(--red-600));
+            border-radius: 20px;
+            padding: 15px;
+            display: flex; align-items: center; justify-content: center;
+            color: white;
+            box-shadow: 0 5px 10px rgba(220, 38, 38, 0.3);
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+            cursor: pointer;
+        }
+        #screen-elderly .icon-lg { font-size: 30px; margin-right: 10px; }
+        #screen-elderly .sos-banner .title { font-size: 22px; font-weight: bold; }
+        #screen-elderly .sos-banner .sub { font-size: 12px; opacity: 0.9; }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        /* Cards */
+        #screen-elderly .status-row { margin-bottom: 20px; gap: 10px; }
+        #screen-elderly .card { 
+            background: #fff; padding: 12px; border-radius: 12px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02); border: 1px solid var(--gray-100); 
+        }
+        #screen-elderly .flex-1 { flex: 1; }
+        
+        #screen-elderly .icon-box { 
+            width: 40px; height: 40px; border-radius: 10px; 
+            display: flex; align-items: center; justify-content: center; font-size: 20px; 
+        }
+        #screen-elderly .icon-box.blue { background: var(--blue-50); color: var(--blue-600); }
+        #screen-elderly .icon-box.green { background: var(--green-50); color: var(--green-600); }
+
+        #screen-elderly .section-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; }
+        #screen-elderly .bar { width: 4px; height: 16px; border-radius: 2px; margin-right: 8px; }
+        #screen-elderly .bar.blue { background: var(--blue-600); }
+        #screen-elderly .bar.purple { background: #9333ea; }
+
+        #screen-elderly .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        #screen-elderly .big-btn { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 15px; border-radius: 15px; min-height: 100px;
+            background: #fff; cursor: pointer;
+        }
+        #screen-elderly .big-btn.red-light { background: var(--red-50); color: var(--red-600); }
+        #screen-elderly .big-btn.orange-light { background: var(--orange-50); color: var(--orange-600); }
+        #screen-elderly .big-btn.green-light { background: var(--green-50); color: var(--green-600); }
+        #screen-elderly .big-btn.blue-light { background: var(--blue-50); color: var(--blue-600); }
+
+        #screen-elderly .icon-md { font-size: 30px; margin-bottom: 5px; padding: 10px; border-radius: 50%; background: rgba(255,255,255,0.6); }
+
+        /* Product Scroll */
+        #screen-elderly .h-scroll { 
+            display: flex; overflow-x: auto; white-space: nowrap; 
+            margin: 0 -15px 20px; padding: 0 15px; 
+            height: 170px; -webkit-overflow-scrolling: touch;
+        }
+        #screen-elderly .product-card { 
+            display: inline-block; width: 140px; margin-right: 10px; flex-shrink: 0;
+            background: #fff; border-radius: 15px; padding: 10px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); vertical-align: top;
+            border: 1px solid var(--gray-100);
+        }
+        #screen-elderly .prod-img { 
+            height: 70px; background: var(--gray-50); border-radius: 10px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 40px; margin-bottom: 5px; 
+        }
+        #screen-elderly .tag { font-size: 10px; background: #f3e8ff; color: #9333ea; padding: 2px 6px; border-radius: 10px; display: inline-block; margin-bottom: 5px; }
+        #screen-elderly .product-title-wrap { font-size: 14px; font-weight: bold; white-space: normal; height: 40px; line-height: 20px; overflow: hidden; margin-bottom: 5px; }
+        #screen-elderly .price { color: var(--red-600); font-weight: bold; font-size: 16px; }
+
+        /* Bottom Nav */
+        #screen-elderly .bottom-nav { 
+            position: fixed; bottom: 0; left: 0; right: 0; 
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
+            padding: 10px 20px 20px;
+            display: flex; justify-content: space-between; 
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            border-top: 1px solid rgba(0,0,0,0.05);
+            z-index: 200;
+        }
+        #screen-elderly .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--gray-400); transition: all 0.3s; cursor: pointer; }
+        #screen-elderly .nav-item.active { color: var(--blue-600); transform: translateY(-2px); }
+        #screen-elderly .nav-icon { font-size: 24px; margin-bottom: 2px; }
+        #screen-elderly .nav-item span { font-size: 11px; font-weight: bold; }
+
+        /* Activity Cards */
+        #screen-elderly .activity-card { height: 120px; border-radius: 15px; padding: 15px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
+        #screen-elderly .activity-card.yellow { background: linear-gradient(135deg, var(--orange-50), #fff7d1); border: 1px solid var(--orange-100); color: #713f12; }
+        #screen-elderly .activity-card.cyan { background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 1px solid #99f6e4; color: #0f766e; }
+        #screen-elderly .card-title { font-weight: bold; font-size: 16px; }
+        #screen-elderly .card-desc { font-size: 12px; }
+
+        /* Health Tab */
+        #screen-elderly .health-hero { background: linear-gradient(135deg, #4f46e5, var(--blue-600)); border-radius: 20px; padding: 20px; color: white; box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4); }
+        #screen-elderly .num-xxl { font-size: 40px; font-weight: bold; line-height: 1; }
+        #screen-elderly .badge-glass { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 3px 10px; border-radius: 15px; font-size: 12px; display: inline-block; margin-left: 10px;}
+        #screen-elderly .bar-chart { display: flex; justify-content: space-between; align-items: flex-end; height: 80px; margin-top: 15px; }
+        #screen-elderly .bar-col { width: 10%; height: 100%; display: flex; align-items: flex-end; background: rgba(255,255,255,0.1); border-radius: 4px; }
+        #screen-elderly .bar-fill { width: 100%; background: white; border-radius: 4px; opacity: 0.8; }
+        
+        /* Service Tab */
+        #screen-elderly .switch-box { display: flex; background: var(--gray-100); padding: 4px; border-radius: 10px; margin-bottom: 15px; }
+        #screen-elderly .switch-item { flex: 1; text-align: center; padding: 10px; border-radius: 8px; font-weight: bold; color: var(--gray-500); cursor: pointer; }
+        #screen-elderly .switch-item.active { background: white; color: var(--blue-600); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        #screen-elderly .service-row { display: flex; align-items: center; margin-bottom: 10px; gap: 10px; }
+        #screen-elderly .srv-icon { font-size: 30px; background: var(--gray-50); padding: 10px; border-radius: 12px; }
+        #screen-elderly .price-txt { color: var(--orange-600); font-weight: bold; margin-top: 4px; font-size: 14px; }
+        #screen-elderly .btn-sm { font-size: 14px; font-weight: bold; padding: 5px 15px; border-radius: 10px; }
+        #screen-elderly .btn-sm.primary { background: var(--blue-600); color: white; }
+        
+        /* Profile Tab */
+        #screen-elderly .profile-card { background: var(--slate-900); padding: 25px 20px; border-radius: 20px; display: flex; align-items: center; }
+        #screen-elderly .avatar { width: 60px; height: 60px; background: var(--gray-100); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; border: 3px solid white; }
+        #screen-elderly .ml-4 { margin-left: 15px; }
+        #screen-elderly .gold-badge { background: linear-gradient(to right, #fde047, #eab308); color: #713f12; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: bold; display: inline-block; }
+        
+        #screen-elderly .menu-item { padding: 20px; display: flex; align-items: center; font-size: 16px; font-weight: bold; color: var(--gray-800); border-bottom: 1px solid var(--gray-50); cursor: pointer; }
+        #screen-elderly .icon-sq { width: 30px; height: 30px; background: var(--gray-50); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; margin-right: 15px; }
+
+        /* SOS Modal */
+        #screen-elderly .sos-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        #screen-elderly .sos-modal { width: 80%; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; }
+        #screen-elderly .sos-header { background: var(--red-600); padding: 20px; }
+        #screen-elderly .sos-body { padding: 30px 20px; }
+        #screen-elderly .count-num { font-size: 80px; font-weight: 900; color: var(--red-600); margin: 20px 0; font-family: monospace; }
+        #screen-elderly .btn-cancel { background: var(--gray-100); color: var(--gray-800); font-weight: bold; font-size: 18px; padding: 15px; border-radius: 15px; width: 100%; }
+
+        /* ==================== FAMILY PAGE STYLES (pages/family/index.wxss) ==================== */
+        #screen-family { background: var(--slate-50); min-height: 100vh; }
+        
+        #screen-family .dashboard-header {
+            background: var(--slate-900);
+            color: white;
+            padding: 50px 20px 40px;
+            border-radius: 0 0 30px 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.4);
+        }
+        
+        #screen-family .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; position: relative; z-index: 10; cursor: pointer; }
+        #screen-family .mode-tag { background: var(--slate-800); border: 1px solid var(--slate-100); padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; letter-spacing: 1px; opacity: 0.8; }
+        
+        #screen-family .user-info { display: flex; align-items: center; gap: 15px; position: relative; z-index: 10; }
+        #screen-family .avatar-lg { width: 70px; height: 70px; background: linear-gradient(135deg, #60a5fa, #2563eb); border-radius: 50%; border: 4px solid var(--slate-800); display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 5px 10px rgba(0,0,0,0.3); }
+        #screen-family .name { font-size: 24px; font-weight: bold; margin-bottom: 5px; }
+        #screen-family .status { color: #4ade80; font-size: 13px; display: flex; align-items: center; font-weight: 500; }
+        #screen-family .dot-pulse { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; margin-right: 5px; box-shadow: 0 0 5px #4ade80; }
+        
+        #screen-family .dashboard-content { padding: 20px; margin-top: -30px; position: relative; z-index: 20; }
+        #screen-family .map-card { padding: 15px; margin-bottom: 15px; }
+        #screen-family .map-view { height: 150px; background: var(--slate-100); border-radius: 10px; position: relative; overflow: hidden; border: 1px solid var(--slate-200); }
+        
+        #screen-family .map-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; }
+        #screen-family .me-dot { width: 15px; height: 15px; background: var(--blue-600); border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-bottom: 5px; animation: bounce 1s infinite alternate; }
+        #screen-family .loc-label { background: var(--slate-800); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+         
+        #screen-family .stat-main { font-size: 28px; font-weight: 900; color: var(--slate-800); line-height: 1; margin-bottom: 10px; }
+        #screen-family .progress-track { background: var(--slate-100); height: 8px; border-radius: 4px; overflow: hidden; }
+
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+
+    </style>
+</head>
+<body>
+
+    <!-- ==================== LANDING SCREEN ==================== -->
+    <div id="screen-landing">
+        <div class="container">
+            <div class="title">欢迎使用银发护卫</div>
+            <div class="sub-title">请选择您的身份</div>
+            
+            <div class="role-card elderly" onclick="navToElderly()">
+                <span class="icon">👴👵</span>
+                <span class="label">我是长辈</span>
+                <span class="desc">大字号 · 语音交互 · 简单好用</span>
+            </div>
+
+            <div class="role-card family" onclick="navToFamily()">
+                <span class="icon">👨‍👩‍👧‍👦</span>
+                <span class="label">我是子女</span>
+                <span class="desc">远程监护 · 健康数据 · 安心守护</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== ELDERLY SCREEN ==================== -->
+    <div id="screen-elderly" class="hidden">
+        
+        <div class="sticky-top header">
+            <div class="flex justify-between items-center" style="margin-bottom: 10px;">
+                <div>
+                    <div class="greeting">早安，张大爷 ☀️</div>
+                    <div class="location">📍 和平里社区 · 优选养老示范区</div>
+                </div>
+            </div>
+
+            <!-- Search Bar (Home Only) -->
+            <div id="elderly-search" class="search-bar">
+                <span style="color: #9ca3af; font-size: 18px;">🔍</span>
+                <input id="searchInput" placeholder="搜索：买药、挂号、旅游..." onkeypress="if(event.keyCode==13) onSearch()">
+                <div class="mic-icon" style="font-size: 20px; cursor: pointer;" onclick="onVoiceSearch()">🎤</div>
+            </div>
+        </div>
+
+        <div class="content-pad">
+            
+            <!-- === HOME TAB === -->
+            <div id="tab-home">
+                <!-- SOS -->
+                <div class="sos-banner" onclick="startSOS()">
+                    <div class="icon-lg">🚨</div>
+                    <div>
+                        <div class="title">紧急呼叫 120</div>
+                        <div class="sub">身体不适 长按求助</div>
+                    </div>
+                </div>
+
+                <div class="status-row flex">
+                    <div class="card flex-1 flex items-center justify-center" style="gap: 10px;">
+                        <div class="icon-box blue">💊</div>
+                        <div>
+                            <div class="text-sm text-gray">下午 14:00</div>
+                            <div class="bold">吃降压药</div>
+                        </div>
+                    </div>
+                    <div class="card flex-1 flex items-center justify-center" style="gap: 10px;">
+                        <div class="icon-box green">👣</div>
+                        <div>
+                            <div class="text-sm text-gray">今日步数</div>
+                            <div class="bold">4,231</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services -->
+                <div class="section-title">
+                    <div class="bar blue"></div> 常用服务
+                </div>
+                <div class="grid-2">
+                    <div class="big-btn red-light" onclick="switchElderlyTab('health')">
+                        <div class="icon-md red">❤️</div> <span class="btn-text bold">健康检测</span>
+                    </div>
+                    <div class="big-btn orange-light" onclick="switchElderlyTab('service')">
+                        <div class="icon-md" style="color: orange;">🛍️</div> <span class="btn-text bold">生活服务</span>
+                    </div>
+                    <button class="big-btn green-light" onclick="alert('拨打 138-8888-8888')">
+                        <div class="icon-md" style="color: green;">📞</div> <span class="btn-text bold">给子女打电话</span>
+                    </button>
+                    <div class="big-btn blue-light" onclick="alert('打开地图导航...')">
+                        <div class="icon-md" style="color: blue;">🧭</div> <span class="btn-text bold">我要回家</span>
+                    </div>
+                </div>
+
+                <!-- Products -->
+                <div class="flex justify-between items-center" style="margin-top: 20px; margin-bottom: 10px;">
+                    <div class="section-title" style="margin-bottom: 0;">
+                        <div class="bar purple"></div> 银发严选
+                    </div>
+                    <span class="text-sm text-gray">更多 &gt;</span>
+                </div>
+                <div class="h-scroll">
+                    <!-- Products rendered via JS or static -->
+                    <div class="product-card">
+                        <div class="prod-img">🦺</div>
+                        <div class="tag">安全</div>
+                        <div class="product-title-wrap">智能防跌倒马甲</div>
+                        <div class="price">¥299</div>
+                    </div>
+                    <div class="product-card">
+                        <div class="prod-img">🥛</div>
+                        <div class="tag">健康</div>
+                        <div class="product-title-wrap">无糖高钙奶粉</div>
+                        <div class="price">¥128</div>
+                    </div>
+                    <div class="product-card">
+                        <div class="prod-img">🚶</div>
+                        <div class="tag">出行</div>
+                        <div class="product-title-wrap">适老助行器</div>
+                        <div class="price">¥450</div>
+                    </div>
+                    <div class="product-card">
+                        <div class="prod-img">📱</div>
+                        <div class="tag">数码</div>
+                        <div class="product-title-wrap">大屏智能手机</div>
+                        <div class="price">¥1099</div>
+                    </div>
+                </div>
+
+                <!-- Activities -->
+                <div class="grid-2" style="margin-bottom: 80px;">
+                    <div class="activity-card yellow">
+                        <div class="card-title">老年大学</div>
+                        <div class="card-desc">今日课程：书法练习</div>
+                        <div class="text-sm bold" style="margin-top: auto;">下午 14:00</div>
+                    </div>
+                    <div class="activity-card cyan">
+                        <div class="card-title">旅居养老</div>
+                        <div class="card-desc">三亚 7日 康养之旅</div>
+                        <div class="text-sm bold" style="margin-top: auto;">热销中</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === HEALTH TAB === -->
+            <div id="tab-health" class="hidden">
+                <div class="health-hero">
+                     <div class="flex items-center gap-2 mb-2" style="opacity: 0.8; margin-bottom: 5px;">🌙 昨夜睡眠</div>
+                     <div class="flex items-end gap-2" style="margin-bottom: 10px;">
+                         <span class="num-xxl">7.5</span> <span class="text-lg">小时</span>
+                         <span class="badge-glass">质量优</span>
+                     </div>
+                     <div class="bar-chart">
+                         <div class="bar-col"><div class="bar-fill" style="height: 75%;"></div></div>
+                         <div class="bar-col"><div class="bar-fill" style="height: 68%;"></div></div>
+                         <div class="bar-col"><div class="bar-fill" style="height: 80%;"></div></div>
+                         <div class="bar-col"><div class="bar-fill" style="height: 72%;"></div></div>
+                         <div class="bar-col"><div class="bar-fill" style="height: 65%;"></div></div>
+                         <div class="bar-col"><div class="bar-fill" style="height: 82%;"></div></div>
+                         <div class="bar-col"><div class="bar-fill" style="height: 78%;"></div></div>
+                     </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <div class="section-title"><span class="icon-circle red" style="margin-right: 10px;">📈</span> 心率趋势</div>
+                    <div style="height: 150px; background: #f9f9f9; display: flex; align-items: center; justify-content: center; color: #999;">
+                        (图表模拟: 72-78 bpm)
+                    </div>
+                    <div class="text-center text-sm text-gray" style="margin-top: 10px;">08:00 - 18:00</div>
+                </div>
+            </div>
+
+            <!-- === SERVICE TAB === -->
+            <div id="tab-service" class="hidden">
+                <div class="switch-box">
+                    <div id="srv-online-btn" class="switch-item active" onclick="setServiceType('online')">上门服务</div>
+                    <div id="srv-offline-btn" class="switch-item" onclick="setServiceType('offline')">附近驿站</div>
+                </div>
+
+                <div id="srv-online-content">
+                    <div class="service-row card">
+                        <div class="srv-icon">🍲</div>
+                        <div class="flex-1">
+                            <div class="bold">上门送餐</div>
+                            <div class="price-txt">¥25/次</div>
+                        </div>
+                        <button class="btn-sm primary">预约</button>
+                    </div>
+                    <div class="service-row card">
+                        <div class="srv-icon">🧹</div>
+                        <div class="flex-1">
+                            <div class="bold">家政保洁</div>
+                            <div class="price-txt">¥45/小时</div>
+                        </div>
+                        <button class="btn-sm primary">预约</button>
+                    </div>
+                    <div class="service-row card">
+                        <div class="srv-icon">🏥</div>
+                        <div class="flex-1">
+                            <div class="bold">陪诊就医</div>
+                            <div class="price-txt" style="color: #999;">¥100/次</div>
+                        </div>
+                        <button class="btn-sm" style="background: #eee; color: #999;">忙碌</button>
+                    </div>
+                </div>
+
+                <div id="srv-offline-content" class="hidden">
+                    <div style="height: 150px; background: #e0f2fe; border-radius: 15px; display: flex; align-items: center; justify-content: center; flex-direction: column; border: 1px solid #bae6fd;">
+                        <span style="font-size: 50px; opacity: 0.5;">🗺️</span>
+                        <div style="background: white; padding: 5px 15px; border-radius: 15px; font-weight: bold; color: var(--blue-600); font-size: 12px; margin-top: -20px;">显示附近 3km 内的养老驿站</div>
+                    </div>
+                    <div class="card" style="margin-top: 15px;">
+                        <div class="flex justify-between" style="margin-bottom: 8px;">
+                            <div class="bold">和平里社区养老驿站</div>
+                            <div style="background: var(--blue-50); color: var(--blue-600); padding: 2px 6px; border-radius: 5px; font-size: 10px;">📍 300m</div>
+                        </div>
+                        <div class="flex" style="gap: 5px; margin-bottom: 8px;">
+                            <span style="background: #f1f5f9; font-size: 10px; padding: 2px 6px; border-radius: 4px; color: #64748b;">助餐</span>
+                            <span style="background: #f1f5f9; font-size: 10px; padding: 2px 6px; border-radius: 4px; color: #64748b;">康复</span>
+                        </div>
+                        <div style="background: var(--orange-50); padding: 8px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--orange-600); font-weight: bold;">
+                            <span>📅 今日义诊：中医把脉</span>
+                            <button style="background: var(--orange-500); color: white; padding: 3px 10px; border-radius: 10px; font-size: 12px;">报名</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- === PROFILE TAB === -->
+            <div id="tab-profile" class="hidden">
+                <div class="profile-card">
+                    <div class="avatar">👴</div>
+                    <div class="ml-4 flex-1 text-white">
+                        <div class="text-xl bold">张建国</div>
+                        <div class="flex" style="gap: 10px; margin-top: 5px;">
+                            <div class="gold-badge">黄金会员</div>
+                            <div style="font-size: 12px; opacity: 0.8;">积分 1200</div>
+                        </div>
+                    </div>
+                    <div class="text-white">🔳</div>
+                </div>
+
+                <div class="grid-2" style="margin-top: 15px;">
+                    <div class="card flex-col items-center justify-center" style="height: 90px; padding: 0;">
+                        <div class="icon-box blue" style="background: var(--blue-50);">🛒</div>
+                        <div class="bold text-sm" style="margin-top: 5px;">我的订单</div>
+                    </div>
+                    <div class="card flex-col items-center justify-center" style="height: 90px; padding: 0;">
+                        <div class="icon-box green" style="background: var(--green-50);">💳</div>
+                        <div class="bold text-sm" style="margin-top: 5px;">养老钱包</div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px; padding: 0;">
+                    <div class="menu-item">
+                        <div class="icon-sq">📊</div> <span class="flex-1">电子健康档案</span> <span style="font-family: monospace;">&gt;</span>
+                    </div>
+                    <div class="menu-item">
+                        <div class="icon-sq">🛡️</div> <span class="flex-1">养老金融服务</span> <span style="font-size: 12px; color: orange; margin-right: 5px;">保险/理财</span> <span style="font-family: monospace;">&gt;</span>
+                    </div>
+                    <div class="menu-item" style="border: none;">
+                        <div class="icon-sq">⚙️</div> <span class="flex-1">系统设置</span> <span style="font-family: monospace;">&gt;</span>
+                    </div>
+                </div>
+
+                <button class="big-btn" style="width: 100%; margin-top: 20px; background: var(--slate-800); color: white; flex-direction: row; gap: 10px;" onclick="navToFamily(true)">
+                    👥 切换至子女监护端
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Bottom Nav -->
+        <div class="bottom-nav">
+            <div id="nav-home" class="nav-item active" onclick="switchElderlyTab('home')">
+                <div class="nav-icon">🏠</div> <span>首页</span>
+            </div>
+            <div id="nav-health" class="nav-item" onclick="switchElderlyTab('health')">
+                <div class="nav-icon">💗</div> <span>健康</span>
+            </div>
+            <div id="nav-service" class="nav-item" onclick="switchElderlyTab('service')">
+                <div class="nav-icon">🏪</div> <span>生活</span>
+            </div>
+            <div id="nav-profile" class="nav-item" onclick="switchElderlyTab('profile')">
+                <div class="nav-icon">👤</div> <span>我的</span>
+            </div>
+        </div>
+
+        <!-- SOS Modal Overlay -->
+        <div id="sos-overlay" class="sos-overlay hidden">
+            <div class="sos-modal">
+                <div id="sos-step-1">
+                    <div class="sos-header">
+                        <div style="font-size: 50px; animation: pulse 1s infinite;">🚨</div>
+                        <div class="text-xl bold text-white">紧急求助 SOS</div>
+                    </div>
+                    <div class="sos-body">
+                        <div style="color: #666; font-size: 18px; margin-bottom: 20px;">正在通知子女...</div>
+                        <div id="sos-countdown" class="count-num">5</div>
+                        <button class="btn-cancel" onclick="cancelSOS()">误触取消</button>
+                    </div>
+                </div>
+                <div id="sos-step-2" class="hidden">
+                    <div class="sos-body" style="padding-top: 40px;">
+                       <div class="icon-box green" style="width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 20px; font-size: 40px;">📞</div>
+                       <div class="text-xl bold text-green" style="margin-bottom: 30px;">已接通客服中心</div>
+                       <button class="btn-cancel" style="background: var(--red-600); color: white;" onclick="endSOS()">结束通话</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ==================== FAMILY SCREEN ==================== -->
+    <div id="screen-family" class="hidden">
+        <div class="dashboard-header">
+            <div class="shield-bg">🛡️</div>
+            <div class="nav-bar">
+                <div class="back-btn" onclick="navToLanding()">
+                    <span class="arrow">&lt;</span> 返回
+                </div>
+                <div class="mode-tag">GUARDIAN MODE</div>
+            </div>
+
+            <div class="user-info">
+                <div class="avatar-lg">👴</div>
+                <div class="info-txt" style="flex: 1;">
+                    <div class="name">父亲</div>
+                    <div class="status">
+                        <div class="dot-pulse"></div> 设备在线 · 电量 85%
+                    </div>
+                </div>
+                <div class="call-btn" onclick="alert('呼叫父亲...')">📞</div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="card map-card">
+                <div class="card-head small">
+                    <div class="flex items-center" style="gap: 5px;"><span class="icon-loc">📍</span> 实时位置</div>
+                    <span class="time-tag">UPDATED: 10:42 AM</span>
+                </div>
+                <div class="map-view">
+                    <div class="map-center">
+                        <div class="me-dot"></div>
+                        <div class="loc-label">和平里社区</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card padded">
+                    <div class="stat-head">💓 心率均值</div>
+                    <div class="stat-main">72 <span class="unit">bpm</span></div>
+                    <div class="progress-track"><div class="progress-bar blue" style="width: 70%"></div></div>
+                </div>
+                <div class="card padded">
+                    <div class="stat-head">💊 服药进度</div>
+                    <div class="stat-main">2<span class="unit light">/3</span></div>
+                    <div class="progress-track"><div class="progress-bar green" style="width: 66%"></div></div>
+                </div>
+            </div>
+
+            <div class="card padded mt-3" style="margin-top: 15px;">
+                <div class="flex items-center gap-2 mb-2" style="gap: 10px;">
+                    <div class="icon-ok">✅</div>
+                    <div class="bold">暂无异常预警</div>
+                </div>
+                <div class="text-sm text-gray" style="margin-top: 5px;">各项生理指标监测正常</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        var sosTimer = null;
+
+        // Navigation
+        function navToLanding() {
+            showScreen('screen-landing');
+        }
+
+        function navToElderly(fromProfile) {
+            showScreen('screen-elderly');
+            // If coming from landing, reset to home
+            if(!fromProfile) switchElderlyTab('home');
+        }
+
+        function navToFamily(fromProfile) {
+            showScreen('screen-family');
+        }
+
+        function showScreen(id) {
+            document.getElementById('screen-landing').classList.add('hidden');
+            document.getElementById('screen-elderly').classList.add('hidden');
+            document.getElementById('screen-family').classList.add('hidden');
+            document.getElementById(id).classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        // Elderly Tabs
+        function switchElderlyTab(tab) {
+            // Hide all tabs
+            document.getElementById('tab-home').classList.add('hidden');
+            document.getElementById('tab-health').classList.add('hidden');
+            document.getElementById('tab-service').classList.add('hidden');
+            document.getElementById('tab-profile').classList.add('hidden');
+            
+            // Show target
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            
+            // Update nav
+            document.querySelectorAll('#screen-elderly .nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('nav-' + tab).classList.add('active');
+
+            // Search bar logic
+            const searchBar = document.getElementById('elderly-search');
+            if(tab === 'home') searchBar.classList.remove('hidden');
+            else searchBar.classList.add('hidden');
+
+            window.scrollTo(0,0);
+        }
+
+        // Service Type Switch
+        function setServiceType(type) {
+            document.getElementById('srv-online-btn').classList.remove('active');
+            document.getElementById('srv-offline-btn').classList.remove('active');
+            document.getElementById('srv-' + type + '-btn').classList.add('active');
+
+            if(type === 'online') {
+                document.getElementById('srv-online-content').classList.remove('hidden');
+                document.getElementById('srv-offline-content').classList.add('hidden');
+            } else {
+                document.getElementById('srv-online-content').classList.add('hidden');
+                document.getElementById('srv-offline-content').classList.remove('hidden');
+            }
+        }
+
+        // SOS Logic
+        function startSOS() {
+            document.getElementById('sos-overlay').classList.remove('hidden');
+            document.getElementById('sos-step-1').classList.remove('hidden');
+            document.getElementById('sos-step-2').classList.add('hidden');
+            
+            let count = 5;
+            document.getElementById('sos-countdown').innerText = count;
+            
+            clearInterval(sosTimer);
+            sosTimer = setInterval(() => {
+                count--;
+                document.getElementById('sos-countdown').innerText = count;
+                if(count <= 0) {
+                    clearInterval(sosTimer);
+                    // Mock connected
+                    document.getElementById('sos-step-1').classList.add('hidden');
+                    document.getElementById('sos-step-2').classList.remove('hidden');
+                }
+            }, 1000);
+        }
+
+        function cancelSOS() {
+            clearInterval(sosTimer);
+            document.getElementById('sos-overlay').classList.add('hidden');
+        }
+
+        function endSOS() {
+            cancelSOS();
+        }
+
+        // Search Functions
+        function onSearch() {
+            const input = document.getElementById('searchInput');
+            const query = input.value.trim();
+            if (query) {
+                alert(`搜索: ${query}`);
+                // 这里可以添加实际的搜索逻辑
+            }
+        }
+
+        function onVoiceSearch() {
+            alert('语音搜索功能正在开发中');
+            // 模拟语音搜索
+            setTimeout(() => {
+                document.getElementById('searchInput').value = '附近养老院';
+                alert('语音识别结果: 附近养老院');
+            }, 1000);
+        }
+
+        // Dynamic DateTime Function
+        function updateDateTime() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('zh-CN', { 
+                month: '2-digit', 
+                day: '2-digit',
+                weekday: 'long'
+            });
+            const timeStr = now.toLocaleTimeString('zh-CN', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false
+            });
+            
+            // 更新日期时间显示
+            const greetingEl = document.querySelector('.greeting');
+            if (greetingEl) {
+                greetingEl.innerHTML = `您好，张大爷 ${getGreetingEmoji()}`;
+            }
+            
+            // 可以添加更多日期时间显示的地方
+        }
+
+        function getGreetingEmoji() {
+            const hour = new Date().getHours();
+            if (hour < 6) return '🌙';
+            if (hour < 12) return '☀️';
+            if (hour < 18) return '🌞';
+            return '🌙';
+        }
+
+        // Startup Loading
+        window.addEventListener('DOMContentLoaded', function() {
+            // 显示加载提示
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'startup-loading';
+            loadingDiv.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: white;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                font-size: 24px;
+                font-weight: bold;
+            `;
+            loadingDiv.innerHTML = `
+                <div style="margin-bottom: 20px; font-size: 48px;">🛡️</div>
+                <div>正在加载银发护卫...</div>
+            `;
+            document.body.appendChild(loadingDiv);
+
+            // 1.5秒后隐藏加载
+            setTimeout(() => {
+                loadingDiv.style.opacity = '0';
+                loadingDiv.style.transition = 'opacity 0.5s';
+                setTimeout(() => {
+                    loadingDiv.remove();
+                }, 500);
+            }, 1500);
+
+            // 启动动态日期时间更新
+            updateDateTime();
+            setInterval(updateDateTime, 60000); // 每分钟更新一次
+        });
+
+    </script>
+</body>
+</html>
